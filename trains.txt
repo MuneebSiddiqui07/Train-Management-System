@@ -1,0 +1,3 @@
+2
+T1,Express Train,Station A,Station B,10:00 AM,12:00 PM
+T2,Local Train,Station C,Station D,1:00 PM,3:00 PM
