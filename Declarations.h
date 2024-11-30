@@ -95,8 +95,6 @@ public:
 
 class Schedules: public Train {
 private:
-    string trainID;
-    string trainName;
     string source;
     string destination;
     string depart_time;
