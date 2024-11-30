@@ -106,12 +106,12 @@ Schedules::~Schedules() {
 }
 
 // Getter for trainID
-string Train::getTrainID() const {
+string Schedules::getTrainID() const {
     return trainID;
 }
 
 // Setter for trainID
-void Train::setTrainID(const string& id) {
+void Schedules::setTrainID(const string& id) {
     trainID = id;
 }
 
