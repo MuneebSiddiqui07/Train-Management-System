@@ -6,11 +6,11 @@
 Train::Train() {
     trainID = "";
     trainName = "";
-    capacity=0;
+    capacity="";
 }
 
 // Parameterized constructor
-Train::Train(const string& id, const string& name, const int& capa) {
+Train::Train(const string& id, const string& name, const string& capa) {
     trainID = id;
     trainName = name;
     capacity=capa;
@@ -53,21 +53,21 @@ void Train::setTrainName(const string& name) {
 void Train::displaySchedule() const {
     cout << "Schedule for Train " << trainName << " (" << trainID << "):\n";
     // Displaying schedule stops (for now, this is just a placeholder since actual schedule data isn't in this version)
-    cout << "Seating Capacity: " << to_string(capacity) << "\n";
+    cout << "Seating Capacity: " << capacity<< "\n";
 }
 
 // Save the train data to a file
 void Train::saveToFile(ofstream& outFile) const {
-    outFile << trainID << "," << trainName << "," << to_string(capacity) << endl;
+    outFile << trainID << "," << trainName << "," << capacity << endl;
 }
 
 // Load the train data from a file
-string capacitystr;
+
 void Train::loadFromFile(ifstream& inFile) {
     getline(inFile, trainID, ',');
     getline(inFile, trainName, ',');
-    getline(inFile, capacitystr,',');
-    capacity=stoi(capacitystr);
+    getline(inFile, capacity,',');
+
 
 }
 
@@ -92,8 +92,8 @@ Schedules::Schedules(const string& id, const string& name, const string& src, co
 
 // Copy constructor
 Schedules::Schedules(const Schedules& other) {
-    trainID = other.trainID;
-    trainName = other.trainName;
+    trainID = other.getTrainID();
+    trainName = other.getTrainName();
     source = other.source;
     destination = other.destination;
     depart_time = other.depart_time;

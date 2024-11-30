@@ -72,11 +72,11 @@ class Train {
 protected:
     string trainID;
     string trainName;
-    int capacity;
+    string capacity;
 
 public:
     Train();
-    Train(const string& id, const string& name, const int& capacity);
+    Train(const string& id, const string& name, const string& capacity);
 
     // Copy constructor
     Train(const Train& other);
@@ -99,6 +99,7 @@ public:
 
 class Schedules: public Train {
 private:
+
     string source;
     string destination;
     string depart_time;
@@ -106,11 +107,10 @@ private:
 
 public:
     Schedules();
-    Schedules(const string& id, const string& name, const string& src, const string& dest);
-
-    // Copy constructor
-    Schedules(const Train& other);
     Schedules(const string& id, const string& name, const string& src, const string& dest, const string& d_time, const string& a_time);
+    // Copy constructor
+    Schedules(const Schedules& other);
+    
 
 
     // Destructor
@@ -220,4 +220,4 @@ public:
     User* authenticate(const std::string& username, const std::string& password);
 };
 
-#endif  // LOGINMANAGER_H
+#endif  

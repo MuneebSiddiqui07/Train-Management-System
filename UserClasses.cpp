@@ -151,7 +151,7 @@ void Admin::login() {
 void Admin::displayMenu() {
     int choice = -1;
 
-    while (choice != 5) {  // Admin will continue until they select "Logout" (option 5)
+    while (choice != 9) {  // Admin will continue until they select "Logout" (option 9)
         cout << "\nAdmin Menu:" << endl;
         cout << "1. View Train Schedule" << endl;
         cout << "2. Add Train Schedule" << endl;
@@ -543,8 +543,7 @@ void Admin::viewTrain()  {
 void Admin::addTrain() {
     cout << "Adding a new train..." << endl;
 
-    string trainID, trainName;
-    int capacity;
+    string trainID, trainName, capacity;
 
     // Loop until a unique Train ID is entered
     while (true) {
@@ -580,14 +579,13 @@ void Admin::addTrain() {
             break; // Exit the loop if the ID is unique
         }
     }
-    string capacitystr;
+
     // After a unique trainID is obtained, proceed to get other details
     cout << "Enter Train Name: ";
     cin.ignore(); // Clear the newline character from the input buffer
     getline(cin, trainName);
     cout << "Enter Seating Capacity: ";
-    getline(cin, capacitystr);
-    capacity=stoi(capacitystr);
+    getline(cin, capacity);
     // Create a new Train object
     Train newTrain(trainID, trainName, capacity);
 
