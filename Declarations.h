@@ -42,9 +42,13 @@ public:
     // Admin-specific functions
     void viewTrainSchedule() const;
     void addTrain();
+    void viewTrain();
     void updateTrainSchedule();
+    void addTrainschedule();
+    void updateTrainDetails();
     void viewpassenger() const;
     void removeTrain();
+    void removeTrainSchedule();
 };
 
 // Derived Class: RegularUser
@@ -128,17 +132,18 @@ public:
 
 class Passenger {
 private:
-    string ticketId;            // Unique identifier for the bogie
-    string name;// Max passengers in a bogie (static const)
-    string trainId;
-    string CNIC;       // Number of passengers in this bogie
+    string ticketId;            // Unique identifier for ticket
+    string name;                // passenger name
+    string trainId;             // Id of the train booked
+    string CNIC;                // cnic for passenger unique identifier 
+    string trainName;           // name of the train 
 
 public:
     // Constructors
     Passenger();  // Default constructor
     Passenger(const string& ticketId);  // Parameterized constructor (with ID only)
 
-    Passenger(const string&  TicketId,const string&  Name,const string&  TrainID,const string&  NIC);
+    Passenger(const string&  TicketId,const string&  Name,const string&  TrainID,const string& TrainName,const string&  NIC);
     // Copy constructor
     Passenger(const Passenger& other);
 
@@ -154,6 +159,9 @@ public:
 
     string getCNIC() const;
     void setCNIC(const string& CNIC);
+
+    string getTrainName() const;
+    void setTrainName(const string& trainName);
 
     void saveToFile(ofstream& outFile) const;
     void loadFromFile(ifstream& inFile);

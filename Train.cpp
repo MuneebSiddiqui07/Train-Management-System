@@ -171,11 +171,12 @@ Passenger::Passenger(const string&  TicketId) {
     CNIC="";    
 }
 
-Passenger::Passenger(const string&  TicketId,const string&  Name,const string&  TrainID,const string&  NIC) {
+Passenger::Passenger(const string&  TicketId,const string&  Name,const string&  TrainID,const string& TrainName,const string&  NIC) {
     ticketId = TicketId;
     name=Name;
     trainId=TrainID;
-    CNIC=NIC;    
+    CNIC=NIC;   
+    trainName=TrainName; 
 }
 
 // Copy constructor
@@ -184,7 +185,8 @@ Passenger::Passenger(const Passenger& other)
     ticketId = other.ticketId;
     name=other.name;
     trainId=other.trainId;
-    CNIC=other.CNIC; 
+    CNIC=other.CNIC;
+    trainName=other.trainName;
 }
 
 // Getter and Setter for passnegerID
@@ -220,9 +222,16 @@ string Passenger::getCNIC() const {
 void Passenger::setCNIC(const string& NIC) { 
     CNIC = NIC; 
 }
+
+string Passenger::getTrainName()const{
+    return trainName;
+}
+void Passenger::setTrainName(const string& TrainName){
+    trainName=TrainName;
+}
 //SAVE Passenger details in file
 void Passenger::saveToFile(ofstream& outFile) const {
-    outFile << ticketId << "," << name << "," << trainId << "," << CNIC <<endl;
+    outFile << ticketId << "," << name << "," << trainId << ","<<trainName<< ","<< CNIC <<endl;
 }
 
 

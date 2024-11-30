@@ -1,6 +1,7 @@
 #include "Declarations.h"
-//this is main file
-// this is muneeb
+// This is the main file
+// This is Muneeb
+
 int main() {
     LoginManager loginManager; // Instance to manage user accounts
     TrainManager trainManager;  // Instance to manage trains
@@ -39,7 +40,7 @@ int main() {
             case 2: { // Log In
                 cout << "Select User Type:\n1. Admin\n2. Regular User\nChoose: ";
                 int usertype;
-                cin>>usertype;
+                cin >> usertype;
                 string username, password;
                 cout << "Enter username: ";
                 cin >> username;
@@ -54,33 +55,67 @@ int main() {
                     if (Admin* admin = dynamic_cast<Admin*>(user)) {
                         int adminChoice;
                         do {
-                            cout << "\nAdmin Menu:\n1. View Train Schedule\n2. Add Train\n3. Update Train Schedule\n4. Remove Train\n5. View Passengers\n6. Log Out\n Choose:";
-                            cin >> adminChoice;
+                            cout << "\nAdmin Menu:" << endl;
+                            cout << "1. View Train Schedule" << endl;
+                            cout << "2. Add Train Schedule" << endl;
+                            cout << "3. Add a Train" << endl;
+                            cout << "4. Update Train Details" << endl;
+                            cout << "5. View Train Details" << endl;
+                            cout << "6. Update Train Schedule" << endl;
+                            cout << "7. Remove Train" << endl;
+                            cout << "8. Remove Train Schedule" << endl;
+                            cout << "9. Logout" << endl;
+                            cout << "Select an Option: ";
+                            cin >> choice;
 
-                            switch (adminChoice) {
-                                case 1:
+                            switch (choice) {
+                                case 1: {
+                                    // View train schedule
                                     admin->viewTrainSchedule();
                                     break;
-                                case 2:
+                                }
+                                case 2: {
+                                    // Add a new train schedule
+                                    admin->addTrainschedule();
+                                    break;
+                                }
+                                case 3: {
+                                    // Add new train 
                                     admin->addTrain();
                                     break;
-                                case 3:
+                                }
+                                case 4: {
+                                    // Update a train
+                                    admin->updateTrainDetails();
+                                    break;
+                                }
+                                case 5: {
+                                    admin->viewTrain();
+                                    break;
+                                }
+                                case 6: {
                                     admin->updateTrainSchedule();
                                     break;
-                                case 4:
+                                }
+                                case 7: {
                                     admin->removeTrain();
                                     break;
-                                case 5:
-                                    admin->viewpassenger();
+                                }
+                                case 8: {
+                                    admin->removeTrainSchedule();
                                     break;
-                                case 6:
-                                    cout << "Logging out..." << endl;
+                                }
+                                case 9: {
+                                    cout << "Logging Out." << endl;
                                     break;
-                                default:
-                                    cout << "Invalid option!" << endl;
+                                }
+                                default: {
+                                    // Handle invalid choices
+                                    cout << "Invalid option. Please try again." << endl;
                                     break;
+                                }
                             }
-                        } while (adminChoice != 6);
+                        } while (adminChoice != 9);
                     } else if (RegularUser * regularUser  = dynamic_cast<RegularUser *>(user)) {
                         int userChoice;
                         do {
@@ -124,4 +159,3 @@ int main() {
     // trainManager.saveToFile("trains.csv");
     
     return 0;
-}
