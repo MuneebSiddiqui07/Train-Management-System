@@ -1,5 +1,5 @@
-#include "Declarations.h"
-// This is the main file
+#include "Declarations.h" 
+// This is main file
 // This is Muneeb
 
 int main() {
@@ -41,109 +41,39 @@ int main() {
                 cout << "Select User Type:\n1. Admin\n2. Regular User\nChoose: ";
                 int usertype;
                 cin >> usertype;
+
                 string username, password;
                 cout << "Enter username: ";
                 cin >> username;
                 cout << "Enter password: ";
                 cin >> password;
 
-                User* user = loginManager.authenticate(username, password);
-                if (user) {
-                    cout << "Login successful!" << endl;
-
-                    // User Menu
-                    if (Admin* admin = dynamic_cast<Admin*>(user)) {
-                        int adminChoice;
-                        do {
-                            cout << "\nAdmin Menu:" << endl;
-                            cout << "1. View Train Schedule" << endl;
-                            cout << "2. Add Train Schedule" << endl;
-                            cout << "3. Add a Train" << endl;
-                            cout << "4. Update Train Details" << endl;
-                            cout << "5. View Train Details" << endl;
-                            cout << "6. Update Train Schedule" << endl;
-                            cout << "7. Remove Train" << endl;
-                            cout << "8. Remove Train Schedule" << endl;
-                            cout << "9. Logout" << endl;
-                            cout << "Select an Option: ";
-                            cin >> adminChoice;
-
-                            switch (adminChoice) {
-                                case 1: {
-                                    // View train schedule
-                                    admin->viewTrainSchedule();
-                                    break;
-                                }
-                                case 2: {
-                                    // Add a new train schedule
-                                    admin->addTrainschedule();
-                                    break;
-                                }
-                                case 3: {
-                                    // Add new train 
-                                    admin->addTrain();
-                                    break;
-                                }
-                                case 4: {
-                                    // Update a train
-                                    admin->updateTrainDetails();
-                                    break;
-                                }
-                                case 5: {
-                                    admin->viewTrain();
-                                    break;
-                                }
-                                case 6: {
-                                    admin->updateTrainSchedule();
-                                    break;
-                                }
-                                case 7: {
-                                    admin->removeTrain();
-                                    break;
-                                }
-                                case 8: {
-                                    admin->removeTrainSchedule();
-                                    break;
-                                }
-                                case 9: {
-                                    cout << "Logging Out." << endl;
-                                    break;
-                                }
-                                default: {
-                                    // Handle invalid choices
-                                    cout << "Invalid option. Please try again." << endl;
-                                    break;
-                                }
-                            }
-                        } while (adminChoice != 9);
-                    } else if (RegularUser * regularUser  = dynamic_cast<RegularUser *>(user)) {
-                        int userChoice;
-                        do {
-                            cout << "\nUser  Menu:\n1. View Train Schedule\n2. Book Ticket\n3. Cancel Ticket\n4. Logout\nChoose: ";
-                            cin >> userChoice;
-
-                            switch (userChoice) {
-                                case 1:
-                                    regularUser ->viewTrainSchedule();
-                                    break;
-                                case 2:
-                                    
-                                    regularUser ->bookTicket();
-                                    break;
-                                case 3:
-                                    regularUser ->cancelTicket();
-                                    break;
-                                case 4:
-                                    cout << "Logging out..." << endl;
-                                    break;
-                                default:
-                                    cout << "Invalid option!" << endl;
-                                    break;
-                            }
-                        } while (userChoice != 4);
+                if (usertype == 1) { // Admin Login
+                    Admin admin; // Create an instance of Admin
+                    bool val;
+                    val = admin.login(username, password); // Call the login method for Admin
+                    while (val != true) {
+                        cout << "Enter username: ";
+                        cin >> username;
+                        cout << "Enter password: ";
+                        cin >> password;
+                        val = admin.login(username, password); // Call the login method for Admin
                     }
+                    admin.displayMenu(); // Show admin menu
+                } else if (usertype == 2) { // Regular User Login
+                    RegularUser  regularUser ; // Create an instance of RegularUser   
+                    bool val;
+                    val = regularUser .login(username, password); // Call the login method for RegularUser    
+                    while (val != true) {
+                        cout << "Enter username: ";
+                        cin >> username;
+                        cout << "Enter password: ";
+                        cin >> password;
+                        val = regularUser .login(username, password); // Call the login method for RegularUser 
+                    }
+                    regularUser .displayMenu(); // Show regular user menu
                 } else {
-                    cout << "Invalid username or password!" << endl;
+                    cout << "Invalid user type!" << endl;
                 }
                 break;
             }
@@ -158,7 +88,6 @@ int main() {
 
     // Save train data before exiting
     // trainManager.saveToFile("trains.csv");
-    
-    return 0;
 
+    return 0;
 }

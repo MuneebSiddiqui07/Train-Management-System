@@ -20,7 +20,7 @@ public:
     virtual ~User(); // Virtual destructor for polymorphism
 
     // Pure virtual functions; 
-    virtual void login();
+    virtual bool login(const string& username, const string& password);
     void viewTrainSchedule() const;
 
 
@@ -36,7 +36,7 @@ public:
     Admin(const string& username, const string& password);
 
     void signup(); 
-    void login();
+    bool login(const string& username, const string& password);
     void displayMenu();
 
     // Admin-specific functions
@@ -58,7 +58,7 @@ public:
     RegularUser(const string& username, const string& password);
 
     void signup() ; // New signup functionality
-    void login() ;
+    bool login(const string& username, const string& password);
     void displayMenu();
 
     // RegularUser-specific functions
@@ -220,4 +220,4 @@ public:
     User* authenticate(const std::string& username, const std::string& password);
 };
 
-#endif  
+#endif

@@ -20,7 +20,7 @@ using namespace std;
 //     return str.substr(first, (last - first + 1));
 // }
 
-bool validateCredentials(const string& fileName, const string& username, const string& password) {
+bool validateCredentials(const string& fileName, const string& username, const string& password)  {
     ifstream file(fileName);
     if (!file.is_open()) {
         cerr << "Error: Could not open file " << fileName << endl;
@@ -31,7 +31,7 @@ bool validateCredentials(const string& fileName, const string& username, const s
     while (getline(file, line)) {
         stringstream ss(line);
         getline(ss, fileUsername, ','); // Read username until comma
-        getline(ss, filePassword); // Read password until end of line
+        getline(ss, filePassword,','); // Read password until end of line
         // Trim whitespace from both username and password
         // fileUsername = trim(fileUsername);
         // filePassword = trim(filePassword);
@@ -101,7 +101,7 @@ void loadOccupancyData() {
         int occupancy;
 
         getline(ss, trainID, ',');
-        ss >> occupancy;
+        ss>>occupancy;
 
         trainOccupancy[trainID] = occupancy; 
     }
@@ -124,11 +124,8 @@ User::User(const string& username, const string& password){
 
 User::~User() {}
 
-void User::login() {
-    cout << "Enter username: ";
-    cin >> username;
-    cout << "Enter password: ";
-    cin >> password;
+bool User::login(const string& username, const string& password) {
+    return true;
 }
 
 string User::getUsername() const {
@@ -173,15 +170,20 @@ void Admin::signup() {
     cout << "Admin account created successfully!" << endl;
 }
 
-void Admin::login() {
+bool Admin::login(const string& username, const string& password) {
+    bool islogged=false;
     cout << "[Admin Login]" << endl;
-    User::login();
+    this->username = username; // Store the username
+    this->password = password; // Store the password
 
-    if (validateCredentials("admins.csv", username, password) == true) {
-        cout << "Admin login successful." << endl;
+    if (validateCredentials("admins.csv", username, password)) {
+        cout << "Admin login successful." << endl; // Assuming you have a member variable to track login status
+        islogged=true;
+        return islogged;
     } else {
         cout << "Invalid credentials. Please try again." << endl;
-        username = password = ""; // Resetting credentials
+        this->username = this->password = ""; // Resetting credentials
+        return islogged;
     }
 }
 
@@ -241,6 +243,7 @@ void Admin::displayMenu() {
             }
             case 9:{
                 cout<<"Logging Out."<<endl;
+                break;
             }
             default: {
                 // Handle invalid choices
@@ -464,7 +467,7 @@ void Admin::updateTrainSchedule() {
                 }
             }
 
-            // Write updated train details to the temporary file
+            // Write updated train details to the temporary file only if changes were made
             tempFile << fileTrainID << "," << fileTrainName << "," << fileSource << "," << fileDestination << ","
                      << fileDepartureTime << "," << fileArrivalTime << endl;
         } else {
@@ -486,7 +489,6 @@ void Admin::updateTrainSchedule() {
         cout << "Error: Train with ID " << trainID << " not found!" << endl;
     }
 }
-
 
 void Admin::removeTrainSchedule() {
     cout << "Removing a train..." << endl;
@@ -676,7 +678,7 @@ void Admin::updateTrainDetails() {
             cout << "\nCurrent Train Details:" << endl;
             cout << "Train ID: " << fileTrainID << endl;
             cout << "Train Name: " << fileTrainName << endl;
-            cout << "Seating Capacity: "<<fileCapacity<<endl;
+            cout << "Seating Capacity: " << fileCapacity << endl;
 
             int choice = -1;
             while (choice != 0) {
@@ -684,6 +686,7 @@ void Admin::updateTrainDetails() {
                 cout << "\nWhat would you like to update?" << endl;
                 cout << "1. Train Name" << endl;
                 cout << "2. Seating Capacity" << endl;
+                cout << "0. Exit to Update Menu" << endl;
                 cout << "Enter your choice: ";
                 cin >> choice;
 
@@ -691,15 +694,20 @@ void Admin::updateTrainDetails() {
                 switch (choice) {
                     case 1: {
                         cout << "Enter new Train Name: ";
-                        cin.ignore();
+                        cin.ignore(); // Clear the input buffer
                         getline(cin, fileTrainName);
                         break;
                     }
                     case 2: {
                         cout << "Enter new Seating Capacity: ";
-                        cin.ignore();
+                        cin.ignore(); // Clear the input buffer
                         getline(cin, fileCapacity);
                         break;
+                    }
+                    case 0: {
+                        cout << "Exiting Update Menu..." << endl;
+                        break;
+                    }
                     default: {
                         cout << "Invalid choice. Please try again." << endl;
                         break;
@@ -707,10 +715,12 @@ void Admin::updateTrainDetails() {
                 }
             }
 
-            // Write updated train details to the temporary file
+            // Only write updated train details to the temporary file if changes were made
             tempFile << fileTrainID << "," << fileTrainName << "," << fileCapacity << endl;
-        } 
-        }   
+        } else {
+            // If the train ID does not match, write the original line to the temp file
+            tempFile << line << endl;
+        }
     }
 
     trainFile.close();
@@ -720,13 +730,12 @@ void Admin::updateTrainDetails() {
     if (trainFound) {
         remove("trains.csv");
         rename("trains_temp.csv", "trains.csv");
-        cout << "Train schedule updated successfully!" << endl;
+        cout << "Train details updated successfully!" << endl;
     } else {
         remove("trains_temp.csv");
         cout << "Error: Train with ID " << trainID << " not found!" << endl;
     }
 }
-
 
 
 void Admin::removeTrain() {
@@ -783,7 +792,56 @@ void Admin::removeTrain() {
         remove("trains_temp.csv");
         cout << "Error: Train with ID " << trainID << " not found!" << endl;
     }
+
+    ifstream scheduleFile("schedules.csv");
+        if (!scheduleFile.is_open()) {
+            cerr << "Error: Could not open train schedule file." << endl;
+            return;
+        }
+
+    // Create a temporary file to store updated train data
+    ofstream temp2File("schedules_temp.csv");
+        if (!temp2File.is_open()) {
+            cerr << "Error: Could not create a temporary file." << endl;
+            scheduleFile.close();
+            return;
+        }
+
+    line="";
+    bool schedFound = false;
+
+    // Read the file line by line
+    while (getline(scheduleFile, line)) {
+        stringstream ss(line);
+        string fileTrainID;
+
+        // Parse the line to extract the train ID
+        getline(ss, fileTrainID, ',');  // First element is trainID
+
+        if (fileTrainID == trainID) {
+            schedFound = true;
+            // Skip the train to be removed (don't write it to temp file)
+        } else {
+            // Write all other lines to the temporary file
+            temp2File << line << endl;
+        }
+    }
+
+    scheduleFile.close();
+    temp2File.close();
+
+        // Replace the original file with the temporary file
+    if (schedFound) {
+        remove("schedules.csv");
+        rename("schedules_temp.csv", "schedules.csv");
+        cout << "Train with ID " << trainID << " removed successfully!" << endl;
+    } else {
+        remove("schedules_temp.csv");
+        cout << "Error: Train with ID " << trainID << " not found!" << endl;
+    }
 }
+
+
 
 // ==================================================== RegularUser Class ============================================================= //
 
@@ -814,27 +872,31 @@ void RegularUser::signup() {
     cout << "User account created successfully!" << endl;
 }
 
-void RegularUser::login() {
-    cout << "[User Login]" << endl;
-    User::login();
+bool RegularUser::login(const string& username, const string& password) {
+    bool islogged=false;
+    cout << "[User  Login]" << endl;
+    this->username = username; // Store the username
+    this->password = password; // Store the password
 
     if (validateCredentials("users.csv", username, password)) {
-        cout << "User login successful." << endl;
+        cout << "User  login successful." << endl; // Assuming you have a member variable to track login status
+        islogged=true;
+        return islogged;
     } else {
         cout << "Invalid credentials. Please try again." << endl;
-        username = password = ""; // Resetting credentials
+        this->username = this->password = ""; // Resetting credentials
+        return islogged;
     }
 }
 
 void RegularUser::displayMenu(){
     int choice = -1;
-    while (choice != 5) {  // 5 is the option for Logout
+    while (choice != 4) {  // 5 is the option for Logout
         cout << "User Menu:" << endl;
         cout << "1. View Train Schedule" << endl;
-        cout << "2. View Train Details" << endl;
-        cout << "3. Book Ticket" << endl;
-        cout << "4. Cancel Ticket" << endl;
-        cout << "5. Logout" << endl;
+        cout << "2. Book Ticket" << endl;
+        cout << "3. Cancel Ticket" << endl;
+        cout << "4. Logout" << endl;
         cout << "Select an Option: ";
         cin >> choice;
 
@@ -843,15 +905,12 @@ void RegularUser::displayMenu(){
                 viewTrainSchedule();
                 break;
             case 2:
-                // viewTrainDetails();
-                break;
-            case 3:
                 bookTicket();
                 break;
-            case 4:
+            case 3:
                 cancelTicket();
                 break;
-            case 5:
+            case 4:
                 cout << "Logging out..." << endl;
                 break;
             default:
@@ -1024,12 +1083,13 @@ void RegularUser::viewTrainSchedule() const {
 }
 
 
-void RegularUser::cancelTicket() {
+void RegularUser ::cancelTicket() {
     cout << "Cancelling a ticket..." << endl;
 
     string ticketID;
     cout << "Enter Ticket ID: ";
     cin >> ticketID;
+    loadOccupancyData(); // Load current occupancy data
 
     // Open the tickets file for reading
     ifstream ticketFile("tickets.csv");
@@ -1048,18 +1108,25 @@ void RegularUser::cancelTicket() {
 
     string line;
     bool ticketFound = false;
+    string trainID;
+    int ticketsToCancel = 0; // Counter for tickets to cancel
 
     // Read the file line by line
     while (getline(ticketFile, line)) {
         stringstream ss(line);
         string fileTicketID, fileUsername;
+
         getline(ss, fileTicketID, ',');  // First element is ticketID
-        getline(ss, fileUsername, ','); // Second element is username
+        getline(ss, fileUsername, ',');   // Second element is username
 
         // Check if the ticketID and username match
         if (fileTicketID == ticketID && fileUsername == username) {
-            // Skip the line containing the ticket to cancel
+            // Ticket to cancel found
             ticketFound = true;
+
+            // Extract the train ID from the line
+            getline(ss, trainID, ','); // Assuming trainID is the third element
+            ticketsToCancel++; // Increment the count of tickets to cancel
         } else {
             // Write all other lines to the temporary file
             tempFile << line << endl;
@@ -1069,21 +1136,39 @@ void RegularUser::cancelTicket() {
     ticketFile.close();
     tempFile.close();
 
+    // Check if the ticket was found and update occupancy
+    if (ticketFound) {
+        // Update the occupancy for the train
+        trainOccupancy[trainID] -= ticketsToCancel; // Decrement occupancy
+        saveOccupancyData(); // Save updated occupancy data
+
+        // Remove the ticket from the original ticket file
+        remove("tickets.csv");
+        rename("tickets_temp.csv", "tickets.csv");
+
+        cout << "Ticket with ID " << ticketID << " cancelled successfully." << endl;
+    } else {
+        // If ticket was not found, clean up the temporary file
+        remove("tickets_temp.csv");
+        cout << "Error: Ticket with ID " << ticketID << " not found or does not belong to you." << endl;
+    }
+
+    // Handle passenger file
     ifstream PassengerFile("passengers.csv");
     if (!PassengerFile.is_open()) {
-        cerr << "Error: Could not open train schedule file." << endl;
+        cerr << "Error: Could not open passenger file." << endl;
         return;
     }
 
-    // Create a temporary file to store updated train data
+    // Create a temporary file to store updated passenger data
     ofstream newtempFile("passenger_temp.csv");
     if (!newtempFile.is_open()) {
-        cerr << "Error: Could not create a temporary file." << endl;
+        cerr << "Error: Could not create a temporary file for passengers." << endl;
         PassengerFile.close();
         return;
     }
 
-    line="";
+    line = "";
     bool PassengerFound = false;
 
     // Read the file line by line
@@ -1106,29 +1191,15 @@ void RegularUser::cancelTicket() {
     PassengerFile.close();
     newtempFile.close();
 
-
     if (PassengerFound) {
         remove("passengers.csv");
         rename("passenger_temp.csv", "passengers.csv");
-        cout << "Passenger with "<<ticketID<< " removed successfully!" << endl;
+        cout << "Passenger with " << ticketID << " removed successfully!" << endl;
     } else {
-        remove("trains_temp.csv");
-        cout << "Error: Train with ID " << ticketID << " not found!" << endl;
-    }
-
-
-    // Replace the original file with the temporary file
-    remove("tickets.csv");
-    rename("tickets_temp.csv", "tickets.csv");
-
-    if (ticketFound) {
-        cout << "Ticket with ID " << ticketID << " cancelled successfully." << endl;
-    } else {
-        cout << "Error: Ticket with ID " << ticketID << " not found or does not belong to you." << endl;
+        remove("passenger_temp.csv");
+        cout << "Error: Passenger with ticket ID " << ticketID << " not found!" << endl;
     }
 }
-
-
 
 
 // ==================================================== LoginManager Class ============================================================= //
@@ -1181,16 +1252,16 @@ void LoginManager::addUser(RegularUser* user) {
 }
 
 // Authenticate user or admin
-User* LoginManager::authenticate(const std::string& username, const std::string& password) {
-    for (int i = 0; i < adminCount; ++i) {
-        if (admins[i]->getUsername() == username && admins[i]->getPassword() == password)
-            return admins[i];
-    }
+// User* LoginManager::authenticate(const std::string& username, const std::string& password) {
+//     for (int i = 0; i < adminCount; ++i) {
+//         if (admins[i]->getUsername() == username && admins[i]->getPassword() == password)
+//             return admins[i];
+//     }
 
-    for (int i = 0; i < userCount; ++i) {
-        if (users[i]->getUsername() == username && users[i]->getPassword() == password)
-            return users[i];
-    }
+//     for (int i = 0; i < userCount; ++i) {
+//         if (users[i]->getUsername() == username && users[i]->getPassword() == password)
+//             return users[i];
+//     }
 
-    return nullptr;  // No match found
-}
+//     return nullptr;  // No match found
+// }
