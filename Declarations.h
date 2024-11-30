@@ -68,22 +68,51 @@ class Train {
 private:
     string trainID;
     string trainName;
+    int capacity;
+
+public:
+    Train();
+    Train(const string& id, const string& name, const int& capacity);
+
+    // Copy constructor
+    Train(const Train& other);
+    // Destructor
+    ~Train();
+
+    // Getters and Setters
+    string getTrainID() const;
+    void setTrainID(const string& id);
+
+    string getTrainName() const;
+    void setTrainName(const string& name);
+
+    void displaySchedule() const;
+
+    // Serialization to save train data
+    void saveToFile(ofstream& outFile) const;
+    void loadFromFile(ifstream& inFile);
+};
+
+class Schedules: public Train {
+private:
+    string trainID;
+    string trainName;
     string source;
     string destination;
     string depart_time;
     string arrival_time;
 
 public:
-    Train();
-    Train(const string& id, const string& name, const string& src, const string& dest);
+    Schedules();
+    Schedules(const string& id, const string& name, const string& src, const string& dest);
 
     // Copy constructor
-    Train(const Train& other);
-    Train(const string& id, const string& name, const string& src, const string& dest, const string& d_time, const string& a_time);
+    Schedules(const Train& other);
+    Schedules(const string& id, const string& name, const string& src, const string& dest, const string& d_time, const string& a_time);
 
 
     // Destructor
-    ~Train();
+    ~Schedules();
 
     // Getters and Setters
     string getTrainID() const;
