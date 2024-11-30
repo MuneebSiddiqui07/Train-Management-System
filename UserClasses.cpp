@@ -824,8 +824,8 @@ void RegularUser::displayMenu(){
     }
 }
 
-
-
+#include <map>
+map<string, int> trainOccupancy;
 void RegularUser::bookTicket() {
     cout << "Booking tickets..." << endl;
 
@@ -839,12 +839,16 @@ void RegularUser::bookTicket() {
         cerr << "Error: Could not open train schedule file." << endl;
         return;
     }
-
+    int occupancy,capint;
     bool trainFound = false;
-    string line;
+    string line,fileCapacity,filetrainID,filetrainName;
     while (getline(trainFile, line)) {
         if (line.find(trainID) != string::npos) {
             trainFound = true;
+            stringstream ss(line);
+            getline(ss,filetrainID,',');
+            getline(ss,filetrainName,',');
+            getline(ss,fileCapacity,',');
             break;
         }
     }
@@ -855,13 +859,41 @@ void RegularUser::bookTicket() {
         return;
     }
 
+    ifstream scheduleFile("schedules.csv");
+    if (!scheduleFile.is_open()) {
+        cerr << "Error: Could not open train schedule file." << endl;
+        return;
+    }
+    
+    bool scheduleFound = false;
+    while (getline(scheduleFile, line)) {
+        if (line.find(trainID) != string::npos) {
+            scheduleFound  = true;
+            break;
+        }
+    }
+    scheduleFile.close();
+
+    if (!scheduleFound) {
+        cout << "Error: Train with ID " << trainID << " doesn't have any available schedule." << endl;
+        return;
+    }
+
+
+
     // Start booking tickets for multiple people
     double totalPrice = 0.0;
     int numTickets;
-
+    
     cout << "How many tickets do you want to book? ";
     cin >> numTickets;
-
+    int currentOccupancy = trainOccupancy[trainID];
+    capint=stoi(fileCapacity);
+    if (currentOccupancy + numTickets > capint){
+        cout<<"Train has no more Occupancy Try booking another Train or Fly better Fly Emirates"<<endl;
+        return;
+    }
+    trainOccupancy[trainID] += numTickets;
     // Open the ticket file for appending
     ofstream ticketFile("tickets.csv", ios::app);
     if (!ticketFile.is_open()) {

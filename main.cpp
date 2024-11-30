@@ -66,9 +66,9 @@ int main() {
                             cout << "8. Remove Train Schedule" << endl;
                             cout << "9. Logout" << endl;
                             cout << "Select an Option: ";
-                            cin >> choice;
+                            cin >> adminChoice;
 
-                            switch (choice) {
+                            switch (adminChoice) {
                                 case 1: {
                                     // View train schedule
                                     admin->viewTrainSchedule();
