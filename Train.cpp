@@ -6,35 +6,26 @@
 Train::Train() {
     trainID = "";
     trainName = "";
-    source = "";
-    destination = "";
-    depart_time = "";
-    arrival_time = "";
+    capacity=0;
 }
 
 // Parameterized constructor
-Train::Train(const string& id, const string& name, const string& src, const string& dest, const string& d_time, const string& a_time) {
+Train::Train(const string& id, const string& name, const int& capa) {
     trainID = id;
     trainName = name;
-    source = src;
-    destination = dest;
-    depart_time = d_time;
-    arrival_time = a_time;
+    capacity=capa;
 }
 
 // Copy constructor
 Train::Train(const Train& other) {
     trainID = other.trainID;
     trainName = other.trainName;
-    source = other.source;
-    destination = other.destination;
-    depart_time = other.depart_time;
-    arrival_time = other.arrival_time;
+    capacity=other.capacity;
 }
 
 // Destructor
 Train::~Train() {
-    // No dynamic memory allocation in this version, so no cleanup needed here
+    
 }
 
 // Getter for trainID
@@ -62,6 +53,83 @@ void Train::setTrainName(const string& name) {
 void Train::displaySchedule() const {
     cout << "Schedule for Train " << trainName << " (" << trainID << "):\n";
     // Displaying schedule stops (for now, this is just a placeholder since actual schedule data isn't in this version)
+    cout << "Seating Capacity: " << to_string(capacity) << "\n";
+}
+
+// Save the train data to a file
+void Train::saveToFile(ofstream& outFile) const {
+    outFile << trainID << "," << trainName << "," << to_string(capacity) << endl;
+}
+
+// Load the train data from a file
+string capacitystr;
+void Train::loadFromFile(ifstream& inFile) {
+    getline(inFile, trainID, ',');
+    getline(inFile, trainName, ',');
+    getline(inFile, capacitystr,',');
+    capacity=stoi(capacitystr);
+
+}
+
+Schedules::Schedules() {
+    trainID = "";
+    trainName = "";
+    source = "";
+    destination = "";
+    depart_time = "";
+    arrival_time = "";
+}
+
+// Parameterized constructor
+Schedules::Schedules(const string& id, const string& name, const string& src, const string& dest, const string& d_time, const string& a_time) {
+    trainID = id;
+    trainName = name;
+    source = src;
+    destination = dest;
+    depart_time = d_time;
+    arrival_time = a_time;
+}
+
+// Copy constructor
+Schedules::Schedules(const Schedules& other) {
+    trainID = other.trainID;
+    trainName = other.trainName;
+    source = other.source;
+    destination = other.destination;
+    depart_time = other.depart_time;
+    arrival_time = other.arrival_time;
+}
+
+// Destructor
+Schedules::~Schedules() {
+    // No dynamic memory allocation in this version, so no cleanup needed here
+}
+
+// Getter for trainID
+string Train::getTrainID() const {
+    return trainID;
+}
+
+// Setter for trainID
+void Train::setTrainID(const string& id) {
+    trainID = id;
+}
+
+// Getter for trainName
+string Schedules::getTrainName() const {
+    return trainName;
+}
+
+// Setter for trainName
+void Schedules::setTrainName(const string& name) {
+    trainName = name;
+}
+
+
+// Display the schedule of the train
+void Schedules::displaySchedule() const {
+    cout << "Schedule for Train " << trainName << " (" << trainID << "):\n";
+    // Displaying schedule stops (for now, this is just a placeholder since actual schedule data isn't in this version)
     cout << "Source: " << source << "\n";
     cout << "Destination: " << destination << "\n";
     cout << "Departure: " << depart_time << "\n";
@@ -69,12 +137,12 @@ void Train::displaySchedule() const {
 }
 
 // Save the train data to a file
-void Train::saveToFile(ofstream& outFile) const {
+void Schedules::saveToFile(ofstream& outFile) const {
     outFile << trainID << "," << trainName << "," << source << "," << destination << "," << depart_time << "," << arrival_time << endl;
 }
 
 // Load the train data from a file
-void Train::loadFromFile(ifstream& inFile) {
+void Schedules::loadFromFile(ifstream& inFile) {
     getline(inFile, trainID, ',');
     getline(inFile, trainName, ',');
     getline(inFile, source, ',');

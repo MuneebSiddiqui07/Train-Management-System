@@ -65,7 +65,7 @@ public:
 
 // Train Class
 class Train {
-private:
+protected:
     string trainID;
     string trainName;
     int capacity;
