@@ -127,6 +127,7 @@ int main() {
                                     regularUser ->viewTrainSchedule();
                                     break;
                                 case 2:
+                                    
                                     regularUser ->bookTicket();
                                     break;
                                 case 3:

@@ -5,7 +5,7 @@
 #include <sstream>
 #include <string>
 #include <algorithm> // for std::remove_if
-
+#include <map>
 using namespace std;
 
 
@@ -72,6 +72,43 @@ void saveCredentials(const string& fileName, const string& username, const strin
     file << username << "," << password << endl;
     file.close();
 }
+map<string, int> trainOccupancy;
+void saveOccupancyData() {
+    ofstream occupancyFile("occupancy.csv");
+    if (!occupancyFile.is_open()) {
+        cerr << "Error: Could not open occupancy file for writing." << endl;
+        return;
+    }
+
+    for (const auto& entry : trainOccupancy) {
+        occupancyFile << entry.first << "," << entry.second << endl; // trainID, occupancy
+    }
+
+    occupancyFile.close();
+}
+
+void loadOccupancyData() {
+    ifstream occupancyFile("occupancy.csv");
+    if (!occupancyFile.is_open()) {
+        cerr << "Error: Could not open occupancy file for reading." << endl;
+        return;
+    }
+
+    string line;
+    while (getline(occupancyFile, line)) {
+        stringstream ss(line);
+        string trainID;
+        int occupancy;
+
+        getline(ss, trainID, ',');
+        ss >> occupancy;
+
+        trainOccupancy[trainID] = occupancy; 
+    }
+
+    occupancyFile.close();
+}
+
 
 // ==================================================== User Class ============================================================= //
 
@@ -824,9 +861,9 @@ void RegularUser::displayMenu(){
     }
 }
 
-#include <map>
-map<string, int> trainOccupancy;
+
 void RegularUser::bookTicket() {
+    loadOccupancyData();
     cout << "Booking tickets..." << endl;
 
     string trainID;
@@ -894,6 +931,7 @@ void RegularUser::bookTicket() {
         return;
     }
     trainOccupancy[trainID] += numTickets;
+    saveOccupancyData();
     // Open the ticket file for appending
     ofstream ticketFile("tickets.csv", ios::app);
     if (!ticketFile.is_open()) {
