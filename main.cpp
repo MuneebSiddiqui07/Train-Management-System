@@ -1,5 +1,5 @@
 #include "Declarations.h"
-
+//this is main file
 int main() {
     LoginManager loginManager; // Instance to manage user accounts
     TrainManager trainManager;  // Instance to manage trains
