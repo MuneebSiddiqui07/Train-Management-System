@@ -207,7 +207,7 @@ void Admin::displayMenu() {
         switch (choice) {
             case 1: {
                 // View train schedule
-                User::viewTrainSchedule();
+                viewTrainSchedule();
                 break;
             }
             case 2: {
