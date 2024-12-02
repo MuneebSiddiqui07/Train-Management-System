@@ -11,15 +11,6 @@ using namespace std;
 
 // ==================================================== Helper Functions ============================================================= //
 
-
-// // Function to trim whitespace from both ends of a string
-// string trim(const string& str) {
-//     size_t first = str.find_first_not_of(' ');
-//     if (first == string::npos) return ""; // no content
-//     size_t last = str.find_last_not_of(' ');
-//     return str.substr(first, (last - first + 1));
-// }
-
 bool validateCredentials(const string& fileName, const string& username, const string& password)  {
     ifstream file(fileName);
     if (!file.is_open()) {
@@ -32,10 +23,7 @@ bool validateCredentials(const string& fileName, const string& username, const s
         stringstream ss(line);
         getline(ss, fileUsername, ','); // Read username until comma
         getline(ss, filePassword,','); // Read password until end of line
-        // Trim whitespace from both username and password
-        // fileUsername = trim(fileUsername);
-        // filePassword = trim(filePassword);
-
+        
         if (fileUsername == username && filePassword == password) {
             return true; // Credentials matched
         }
@@ -72,7 +60,8 @@ void saveCredentials(const string& fileName, const string& username, const strin
     file << username << "," << password << endl;
     file.close();
 }
-map<string, int> trainOccupancy;
+
+map<string, int> trainOccupancy; 
 void saveOccupancyData() {
     ofstream occupancyFile("occupancy.csv");
     if (!occupancyFile.is_open()) {
@@ -270,7 +259,7 @@ void Admin::viewTrainSchedule() const {
         string fileScheduleID, fileTrainID, fileTrainName, fileSource, fileDestination, fileDepartureTime, fileArrivalTime;
 
         // Extract each field from the line
-        getline(ss, fileScheduleID, ',');
+        getline(ss, fileScheduleID, ',');     // Get ScheduleID  
         getline(ss, fileTrainID, ',');        // Get trainID
         getline(ss, fileTrainName, ',');      // Get train name
         getline(ss, fileSource, ',');         // Get source
@@ -307,7 +296,7 @@ void Admin::viewpassenger() const {
         string fileTicketID, fileName, fileTrainID,filetrainName, fileCNIC;
 
         // Extract each field from the line
-        getline(ss, fileTicketID, ',');        // Skip ticketID
+        getline(ss, fileTicketID, ',');        // Get ticketID
         getline(ss, fileName, ',');      // Get Passenger name
         getline(ss, fileTrainID, ',');         // Get TRAIN ID
         getline(ss,filetrainName,',');  //Get Train Name
@@ -371,7 +360,7 @@ void Admin::addTrainschedule() {
     trainsFile.close();
 
     if (!trainExists) {
-        cerr << "Error: Train ID " << trainID << " does not exist in trains.csv!" << endl;
+        cerr << "Error: Train ID " << trainID << " does not exist!" << endl;
         return;
     }
 
@@ -502,12 +491,6 @@ void Admin::updateTrainSchedule() {
 
                 // Update selected field
                 switch (choice) {
-                    // case 1: {
-                    //     cout << "Enter new Train Name: ";
-                    //     cin.ignore();
-                    //     getline(cin, fileTrainName);
-                    //     break;
-                    // }
                     case 1: {
                         cout << "Enter new Source: ";
                         cin.ignore();
@@ -646,7 +629,7 @@ void Admin::viewTrain()  {
         // Extract each field from the line
         getline(ss, fileTrainID, ',');        // GET trainID
         getline(ss, fileTrainName, ',');      // Get train name
-        getline(ss, fileCapacity, ',');         // Get source
+        getline(ss, fileCapacity, ',');         // Get Capacity
 
         // Print all details 
         cout <<"Train ID: " <<fileTrainID<<endl;
@@ -1349,18 +1332,3 @@ void LoginManager::addUser(RegularUser* user) {
     }
     users[userCount++] = user;
 }
-
-// Authenticate user or admin
-// User* LoginManager::authenticate(const std::string& username, const std::string& password) {
-//     for (int i = 0; i < adminCount; ++i) {
-//         if (admins[i]->getUsername() == username && admins[i]->getPassword() == password)
-//             return admins[i];
-//     }
-
-//     for (int i = 0; i < userCount; ++i) {
-//         if (users[i]->getUsername() == username && users[i]->getPassword() == password)
-//             return users[i];
-//     }
-
-//     return nullptr;  // No match found
-// }

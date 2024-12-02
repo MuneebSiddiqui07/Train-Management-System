@@ -1,6 +1,4 @@
 #include "Declarations.h" 
-// This is main file
-// This is Muneeb
 
 int main() {
     LoginManager loginManager; // Instance to manage user accounts
@@ -85,9 +83,6 @@ int main() {
                 break;
         }
     } while (choice != 3);
-
-    // Save train data before exiting
-    // trainManager.saveToFile("trains.csv");
 
     return 0;
 }

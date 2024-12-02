@@ -217,7 +217,6 @@ public:
     void addUser(RegularUser* user);
 
     // Authenticate user or admin
-    User* authenticate(const std::string& username, const std::string& password);
 };
 
 #endif
