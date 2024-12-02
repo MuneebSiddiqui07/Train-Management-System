@@ -328,17 +328,52 @@ void Admin::addTrainschedule() {
     cout << "Adding a new train schedule..." << endl;
 
     string trainID, trainName, source, destination, departure_Time, arrival_Time;
-    ifstream trainFile("schedules.csv");
-        if (!trainFile.is_open()) {
-            cerr << "Error: Could not open train schedule file." << endl;
-            return;
-        }
+
+    // Open the trains.csv file to validate the train ID and train Name
+    ifstream trainsFile("trains.csv");
+    if (!trainsFile.is_open()) {
+        cerr << "Error: Could not open trains file to validate Train ID." << endl;
+        return;
+    }
+
     cout << "Enter Train ID: ";
     cin >> trainID;
+
+    bool trainExists = false;
+    string correctTrainName; // To store the correct train name if ID is found
     string line;
+
+    // Check if the train ID and train name exist in the trains.csv file
+    while (getline(trainsFile, line)) {
+        stringstream ss(line);
+        string fileTrainID, fileTrainName;
+
+        getline(ss, fileTrainID, ',');  // Assume Train ID is the first field
+        getline(ss, fileTrainName, ','); // Assume Train Name is the second field
+
+        if (fileTrainID == trainID) {
+            trainExists = true;
+            correctTrainName = fileTrainName;
+            break;
+        }
+    }
+    trainsFile.close();
+
+    if (!trainExists) {
+        cerr << "Error: Train ID " << trainID << " does not exist!" << endl;
+        return;
+    }
+
     cout << "Enter Train Name: ";
     cin.ignore(); // Clear the newline character from the input buffer
     getline(cin, trainName);
+
+    if (trainName != correctTrainName) {
+        cerr << "Error: Train Name does not match the Train ID!" << endl;
+        return;
+    }
+
+    // Proceed to add the schedule
     cout << "Enter Source: ";
     getline(cin, source);
     cout << "Enter Destination: ";
@@ -348,16 +383,23 @@ void Admin::addTrainschedule() {
     cout << "Enter Arrival Time: ";
     getline(cin, arrival_Time);
 
-    // Create a new Train object
+    // Create a new Train Schedule object
     Schedules newschedule(trainID, trainName, source, destination, departure_Time, arrival_Time);
 
-    // Append the new train details to the CSV file
-    ofstream ScheduleFileOut("schedules.csv", ios::app);
-    newschedule.saveToFile(ScheduleFileOut);
-    ScheduleFileOut.close();
+    // Append the new train schedule to the schedules.csv file
+    ofstream scheduleFileOut("schedules.csv", ios::app);
+    if (!scheduleFileOut.is_open()) {
+        cerr << "Error: Could not open schedules.csv for writing." << endl;
+        return;
+    }
+
+    newschedule.saveToFile(scheduleFileOut);
+    scheduleFileOut.close();
 
     cout << "Train schedule added successfully!" << endl;
 }
+
+
 
 
 
@@ -491,11 +533,16 @@ void Admin::updateTrainSchedule() {
 }
 
 void Admin::removeTrainSchedule() {
-    cout << "Removing a train..." << endl;
+    cout << "Removing a train Schedule..." << endl;
 
-    string trainID;
-    cout << "Enter Train ID to remove: ";
+    string trainID, source, destination;
+    cout << "Enter Train ID to remove Schedule: ";
     cin >> trainID;
+    cout << "Enter Source Station: ";
+    cin.ignore(); // To clear newline character from input buffer
+    getline(cin, source); // Use getline to handle spaces in station names
+    cout << "Enter Destination Station: ";
+    getline(cin, destination);
 
     // Open the trains file for reading
     ifstream trainFile("schedules.csv");
@@ -513,19 +560,22 @@ void Admin::removeTrainSchedule() {
     }
 
     string line;
-    bool trainFound = false;
+    bool scheduleFound = false;
 
     // Read the file line by line
     while (getline(trainFile, line)) {
         stringstream ss(line);
-        string fileTrainID;
+        string fileTrainID, filetrainName, fileSource, fileDestination;
 
-        // Parse the line to extract the train ID
-        getline(ss, fileTrainID, ',');  // First element is trainID
+        // Parse the line to extract train details
+        getline(ss, fileTrainID, ',');       // First element is train ID
+        getline(ss, filetrainName, ',');
+        getline(ss, fileSource, ',');       
+        getline(ss, fileDestination, ','); 
 
-        if (fileTrainID == trainID) {
-            trainFound = true;
-            // Skip the train to be removed (don't write it to temp file)
+        if (fileTrainID == trainID && fileSource == source && fileDestination == destination) {
+            scheduleFound = true;
+            // Skip the schedule to be removed (don't write it to temp file)
         } else {
             // Write all other lines to the temporary file
             tempFile << line << endl;
@@ -536,13 +586,13 @@ void Admin::removeTrainSchedule() {
     tempFile.close();
 
     // Replace the original file with the temporary file
-    if (trainFound) {
+    if (scheduleFound) {
         remove("schedules.csv");
         rename("schedules_temp.csv", "schedules.csv");
-        cout << "Train with ID " << trainID << " removed successfully!" << endl;
+        cout << "Schedule for Train ID " << trainID << " from " << source << " to " << destination << " removed successfully!" << endl;
     } else {
         remove("schedules_temp.csv");
-        cout << "Error: Train with ID " << trainID << " not found!" << endl;
+        cout << "Error: Schedule for Train ID " << trainID << " from " << source << " to " << destination << " not found!" << endl;
     }
 }
 
@@ -1048,7 +1098,7 @@ void RegularUser::bookTicket() {
 
 
 void RegularUser::viewTrainSchedule() const {
-    ifstream trainFile("trains.csv");
+    ifstream trainFile("schedules.csv");
     if (!trainFile.is_open()) {
         cerr << "Error: Could not open train schedule file." << endl;
         return;
