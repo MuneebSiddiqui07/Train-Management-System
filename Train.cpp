@@ -81,9 +81,10 @@ Schedules::Schedules() {
 }
 
 // Parameterized constructor
-Schedules::Schedules(const string& id, const string& name, const string& src, const string& dest, const string& d_time, const string& a_time) {
+Schedules::Schedules(const string& id, const string& name, const string& schedid, const string& src, const string& dest, const string& d_time, const string& a_time) {
     trainID = id;
     trainName = name;
+    ScheduleID=schedid;
     source = src;
     destination = dest;
     depart_time = d_time;
@@ -94,6 +95,7 @@ Schedules::Schedules(const string& id, const string& name, const string& src, co
 Schedules::Schedules(const Schedules& other) {
     trainID = other.getTrainID();
     trainName = other.getTrainName();
+    ScheduleID=other.ScheduleID;
     source = other.source;
     destination = other.destination;
     depart_time = other.depart_time;
@@ -138,7 +140,7 @@ void Schedules::displaySchedule() const {
 
 // Save the train data to a file
 void Schedules::saveToFile(ofstream& outFile) const {
-    outFile << trainID << "," << trainName << "," << source << "," << destination << "," << depart_time << "," << arrival_time << endl;
+    outFile << ScheduleID << "," << trainID << "," << trainName << "," << source << "," << destination << "," << depart_time << "," << arrival_time << endl;
 }
 
 // Load the train data from a file

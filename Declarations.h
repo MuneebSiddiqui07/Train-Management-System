@@ -99,7 +99,7 @@ public:
 
 class Schedules: public Train {
 private:
-
+    string ScheduleID;
     string source;
     string destination;
     string depart_time;
@@ -107,7 +107,7 @@ private:
 
 public:
     Schedules();
-    Schedules(const string& id, const string& name, const string& src, const string& dest, const string& d_time, const string& a_time);
+    Schedules(const string& id, const string& name,const string& schedid, const string& src, const string& dest, const string& d_time, const string& a_time);
     // Copy constructor
     Schedules(const Schedules& other);
     
